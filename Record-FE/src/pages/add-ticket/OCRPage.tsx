@@ -1,21 +1,7 @@
-/**
- * OCRPage.tsx
- * 티켓 이미지에서 공연 정보를 자동으로 추출하는 페이지
- */
- console.log("🔥 __DEV__ =", __DEV__);
- console.log("🔥 API_BASE_URL =", API_BASE_URL);
- console.log("🔥 DEVICE =", Platform.OS);
-
-
-
-import { API_BASE_URL } from '../../services/api/client';
-
-
 import React, { useState } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   StyleSheet,
   Image,
   Alert,
@@ -24,6 +10,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { launchCamera, launchImageLibrary, Asset } from 'react-native-image-picker';
+import { Button } from '../../components/ui';
+import ModalHeader from '../../components/ModalHeader';
 import {
   Colors,
   Typography,
@@ -133,24 +121,12 @@ const OCRPage: React.FC<OCRPageProps> = ({ navigation, route }) => {
       const ocrData = result.data;
 
       console.log('📋 추출된 OCR 데이터:', ocrData);
-
-      /**
-       * 백엔드 응답 형식:
-       * {
-       *   "title": "Yet to Come in BUSAN",
-       *   "artist": "BTS",
-       *   "date": "2022-10-15",
-       *   "time": "18:00",
-       *   "venue": "부산 아시아드 주경기장",
-       *   "seat": "3층 N63구역 14열 23번"
-       * }
-       */
       
       // date와 time을 합쳐서 performedAt 생성
       let performedAt = new Date();
       if (ocrData.date) {
         const dateStr = ocrData.date;
-        const timeStr = ocrData.time || '19:00'; // time이 없으면 기본값 19:00
+        const timeStr = ocrData.time || '19:00';
         const [hours, minutes] = timeStr.split(':').map(Number);
         performedAt = new Date(dateStr);
         performedAt.setHours(hours || 19, minutes || 0, 0, 0);
@@ -163,7 +139,7 @@ const OCRPage: React.FC<OCRPageProps> = ({ navigation, route }) => {
         seat: ocrData.seat ?? '',
         performedAt: performedAt,
         bookingSite: '',
-        genre: '밴드', // 기본값 (null 금지)
+        genre: '밴드', // 기본값
         status: TicketStatus.PUBLIC,
       };
 
@@ -172,7 +148,7 @@ const OCRPage: React.FC<OCRPageProps> = ({ navigation, route }) => {
       setOcrResult(ocrData);
       Alert.alert(
         'OCR 완료',
-        '티켓 정보를 추출했습니다.\n확인 후 수정이 필요하면 직접 편집할 수 있습니다.',
+        '티켓 정보를 추출했습니다.',
         [{ text: '확인', onPress: () => handleConfirmOCR(formatted) }],
       );
     } catch (error) {
@@ -204,17 +180,10 @@ const OCRPage: React.FC<OCRPageProps> = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['left', 'right']}>
-      {/* 헤더 */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.backButtonText}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>티켓 스캔하기</Text>
-        <View style={{ width: 40 }} />
-      </View>
+      <ModalHeader
+        title="티켓 스캔하기"
+        onBack={() => navigation.goBack()}
+      />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* 안내 메시지 */}
@@ -228,19 +197,21 @@ const OCRPage: React.FC<OCRPageProps> = ({ navigation, route }) => {
         {/* 이미지 선택 버튼 */}
         {!selectedImage && (
           <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.imageButton}
+            <Button
+              title="카메라로 촬영"
+              variant="tertiary"
               onPress={handleTakePhoto}
-            >
-              <Text style={styles.imageButtonText}>카메라로 촬영</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
               style={styles.imageButton}
+              textStyle={styles.imageButtonText}
+            />
+
+            <Button
+              title="갤러리에서 선택"
+              variant="tertiary"
               onPress={handleSelectFromGallery}
-            >
-              <Text style={styles.imageButtonText}>갤러리에서 선택</Text>
-            </TouchableOpacity>
+              style={styles.imageButton}
+              textStyle={styles.imageButtonText}
+            />
           </View>
         )}
 
@@ -254,19 +225,19 @@ const OCRPage: React.FC<OCRPageProps> = ({ navigation, route }) => {
 
             {isProcessing && (
               <View style={styles.processingOverlay}>
-                <ActivityIndicator size="large" color="#B11515" />
+                <ActivityIndicator size="large" color={Colors.primary} />
                 <Text style={styles.processingText}>티켓 정보 추출 중...</Text>
               </View>
             )}
 
             {!isProcessing && (
               <View style={styles.retryButtonContainer}>
-                <TouchableOpacity
-                  style={styles.retryButton}
+                <Button
+                  title="다시 선택하기"
+                  variant="secondary"
                   onPress={handleRetry}
-                >
-                  <Text style={styles.retryButtonText}>다시 선택하기</Text>
-                </TouchableOpacity>
+                  style={styles.retryButton}
+                />
               </View>
             )}
           </View>
@@ -281,33 +252,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.secondarySystemBackground,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: Spacing.lg,
-    backgroundColor: Colors.systemBackground,
-    ...Shadows.small,
-    zIndex: 1,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: BorderRadius.round,
-    backgroundColor: Colors.secondarySystemBackground,
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...Shadows.small,
-  },
-  backButtonText: {
-    ...Typography.title3,
-    color: Colors.label,
-    fontWeight: '500',
-  },
-  headerTitle: {
-    ...Typography.headline,
-    color: Colors.label,
-  },
   content: {
     flex: 1,
   },
@@ -319,33 +263,51 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.systemGray5,
   },
   contextSubtitle: {
-    ...Typography.footnote,
+    ...Typography.subheadline,
     color: Colors.secondaryLabel,
     textAlign: 'left',
-    lineHeight: 20,
   },
+
   buttonContainer: {
     flexDirection: 'row',
     paddingHorizontal: Spacing.sectionSpacing,
     gap: Spacing.md,
     marginVertical: Spacing.lg,
   },
-
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: BorderRadius.round,
+    backgroundColor: Colors.secondarySystemBackground,
+    ...Shadows.small,
+  },
+  backButtonText: {
+    ...Typography.title3,
+    color: Colors.label,
+    fontWeight: '500',
+  },
   imageButton: {
     flex: 1,
     backgroundColor: Colors.systemBackground,
+    borderWidth: 1,
+    borderColor: Colors.systemGray4,
     borderRadius: BorderRadius.lg,
-    padding: Spacing.xl,
-    alignItems: 'center',
-    justifyContent: 'center',
     minHeight: 140,
     ...Shadows.medium,
   },
   imageButtonText: {
     ...Typography.body,
-    fontWeight: '600',
     color: Colors.label,
     textAlign: 'center',
+  },
+
+  retryButtonContainer: {
+    paddingHorizontal: 24,
+    paddingVertical: 36,
+    alignItems: 'center',
+  },
+  retryButton: {
+    width: '116%',
   },
 
   previewContainer: {
@@ -364,7 +326,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     borderRadius: BorderRadius.lg,
     justifyContent: 'center',
     alignItems: 'center',
@@ -373,25 +335,6 @@ const styles = StyleSheet.create({
     ...Typography.body,
     color: Colors.systemBackground,
     marginTop: Spacing.md,
-    fontWeight: '600',
-  },
-
-  retryButtonContainer: {
-    paddingHorizontal: 24,
-    paddingVertical: 36,
-    alignItems: 'center',
-  },
-  retryButton: {
-    width: '116%',
-    backgroundColor: '#8E8E93',
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  retryButtonText: {
-    color: '#FFFFFF',
-    fontSize: 17,
-    fontWeight: '600',
   },
 });
 

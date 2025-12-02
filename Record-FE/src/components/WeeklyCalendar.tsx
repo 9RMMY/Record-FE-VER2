@@ -7,6 +7,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Dimensions, PanResponder } from 'react-native';
 import { Ticket } from '../types/ticket';
+import {
+  Colors,
+  Typography,
+  Spacing,
+  BorderRadius,
+  Shadows,
+} from '../styles/designSystem';
 
 interface WeeklyCalendarProps {
   selectedDate: string;
@@ -200,46 +207,45 @@ const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    marginHorizontal: 20,
-    marginBottom: 20,
-    paddingVertical: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    backgroundColor: Colors.systemBackground,
+    borderRadius: BorderRadius.cornerRadiusLarge,
+    marginHorizontal: Spacing.screenPadding,
+    marginBottom: Spacing.xxl,
+    paddingVertical: Spacing.sm,
+    borderWidth: 1,
+    borderColor: Colors.systemGray5,
   },
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
-    marginBottom: 12,
+    paddingHorizontal: Spacing.screenPadding,
+    paddingBottom: Spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: Colors.separator,
+    marginBottom: Spacing.md,
   },
   navButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#F8F9FA',
+    width: 36,
+    height: 36,
     justifyContent: 'center',
     alignItems: 'center',
   },
   navButtonText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#B11515',
+    ...Typography.title1,
+    fontWeight: '300',
+    color: Colors.label,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   monthText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#2C3E50',
+    ...Typography.headline,
+    fontWeight: '400',
+    color: Colors.label,
     flex: 1,
     textAlign: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   weekContainer: {
     flexDirection: 'row',
@@ -255,50 +261,49 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   selectedDay: {
-    backgroundColor: '#B11515',
+    backgroundColor: Colors.primary,
   },
   todayDay: {
-    backgroundColor: '#F8F9FA',
+    backgroundColor: Colors.secondarySystemBackground,
     borderWidth: 1,
-    borderColor: '#B11515',
+    borderColor: Colors.primary,
   },
   dayName: {
-    fontSize: 12,
+    ...Typography.footnote,
     fontWeight: '500',
-    color: '#6C757D',
-    marginBottom: 4,
+    color: Colors.secondaryLabel,
+    marginBottom: Spacing.xs,
   },
   dayNumber: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#2C3E50',
+    ...Typography.body,
+    fontWeight: '400',
+    color: Colors.label,
   },
   selectedText: {
-    color: '#FFFFFF',
+    color: Colors.systemBackground,
   },
   todayText: {
-    color: '#B11515',
+    color: Colors.primary,
+    ...Typography.body,
   },
   eventIndicator: {
     position: 'absolute',
-    bottom: 4,
+    bottom: Spacing.xs,
     width: 6,
     height: 6,
-    borderRadius: 3,
-    backgroundColor: '#B11515',
+    borderRadius: 4,
+    backgroundColor: Colors.primary,
   },
   selectedEventIndicator: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.systemBackground,
   },
   eventCount: {
-    fontSize: 8,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
+    ...Typography.title2,
+    color: Colors.systemBackground,
     textAlign: 'center',
-    lineHeight: 6,
   },
   selectedEventCount: {
-    color: '#B11515',
+    color: Colors.primary,
   },
 });
 

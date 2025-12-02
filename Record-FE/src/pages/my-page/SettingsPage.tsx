@@ -187,7 +187,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ navigation }) => {
       icon: '🚪',
       onPress: handleLogout,
       showArrow: false,
-      textColor: '#FF6B6B',
+      textColor: Colors.primary,
     },
     {
       id: 4,
@@ -195,7 +195,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ navigation }) => {
       icon: '⚠️',
       onPress: handleDeleteAccount,
       showArrow: false,
-      textColor: '#FF3B30',
+      textColor: Colors.primary,
     },
   ];
 
@@ -332,14 +332,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   defaultAvatarText: {
-    fontSize: 48,
+    ...Typography.largeTitle,
     color: Colors.secondaryLabel,
   },
   username: {
-    ...Typography.title1,
-    fontWeight: 'bold',
+    ...Typography.title2,
+    fontWeight: '500',
     color: Colors.label,
-    paddingVertical: 12,
+    paddingVertical: Spacing.md,
   },
   optionsContainer: {
     ...ComponentStyles.card,
@@ -361,8 +361,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   optionIcon: {
-    fontSize: 20,
-    marginRight: 16,
+    ...Typography.title3,
+    marginRight: Spacing.md,
   },
   optionTitle: {
     ...Typography.callout,
@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
   },
   versionContainer: {
     alignItems: 'center',
-    paddingVertical: 32,
+    paddingVertical: Spacing.xl,
   },
   versionText: {
     ...Typography.footnote,
@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.systemGray5,
   },
   modalButtonDelete: {
-    backgroundColor: '#FF3B30',
+    backgroundColor: Colors.systemRed,
   },
   modalButtonCancelText: {
     ...Typography.callout,

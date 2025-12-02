@@ -145,16 +145,13 @@ class TicketService {
   /**
    * 5) 친구 티켓 목록 조회
    * GET /api/tickets/user/{friendId}
-   * Header: X-User-Id (현재 사용자 ID, 좋아요 상태 확인용)
    */
   async getFriendTickets(
     friendId: string,
-    currentUserId?: string,
     page: number = 0,
     size: number = 20
   ): Promise<Result<any[]>> {
-    const headers = currentUserId ? { 'X-User-Id': currentUserId } : undefined;
-    return apiClient.get<any[]>(`/api/tickets/user/${friendId}`, headers);
+    return apiClient.get<any[]>(`/api/tickets/user/${friendId}`);
   }
 
   /**
@@ -193,59 +190,18 @@ class TicketService {
   }
 
   /**
-   * 8) 고급 검색
-   * POST /api/tickets/user/{userId}/search
-   */
-  async searchTickets(
-    userId: string,
-    searchParams: {
-      startDate?: string;
-      endDate?: string;
-      genre?: string;
-      venue?: string;
-      artist?: string;
-      performanceTitle?: string;
-      sortBy?: string;
-      sortDirection?: string;
-    }
-  ): Promise<Result<any[]>> {
-    return apiClient.post<any[]>(`/api/tickets/user/${userId}/search`, searchParams);
-  }
-
-  /**
-   * 9) 티켓 통계 분석
-   * GET /api/tickets/user/{userId}/statistics?year=2024
-   */
-  async getTicketStatistics(
-    userId: string,
-    year?: number
-  ): Promise<Result<any>> {
-    const params = year ? `?year=${year}` : '';
-    return apiClient.get<any>(`/api/tickets/user/${userId}/statistics${params}`);
-  }
-
-  /**
-   * 10) 연말 결산
-   * GET /api/tickets/user/{userId}/year-in-review?year=2024
-   */
-  async getYearInReview(
-    userId: string,
-    year?: number
-  ): Promise<Result<any>> {
-    const params = year ? `?year=${year}` : '';
-    return apiClient.get<any>(`/api/tickets/user/${userId}/year-in-review${params}`);
-  }
-
-  /**
-   * 11) 좋아요 추가/취소 (토글)
+   * 8) 좋아요 토글
    * POST /api/tickets/{ticketId}/like
    * Header: X-User-Id
+   * Response: { isLiked: boolean, likeCount: number }
    */
   async toggleLike(
     ticketId: string | number,
     userId: string
   ): Promise<Result<{ isLiked: boolean; likeCount: number }>> {
+    // ticketId를 숫자로 변환 (백엔드는 integer를 기대함)
     const numericTicketId = typeof ticketId === 'string' ? parseInt(ticketId, 10) : ticketId;
+    
     if (isNaN(numericTicketId)) {
       return {
         success: false,
@@ -255,9 +211,10 @@ class TicketService {
         },
       };
     }
+    
     return apiClient.post<{ isLiked: boolean; likeCount: number }>(
       `/api/tickets/${numericTicketId}/like`,
-      {},
+      undefined,
       {
         headers: { 'X-User-Id': userId },
       }
@@ -265,15 +222,18 @@ class TicketService {
   }
 
   /**
-   * 12) 좋아요한 사용자 목록 조회 (티켓 소유자만)
+   * 9) 좋아요한 사용자 목록 조회 (티켓 소유자만 조회 가능)
    * GET /api/tickets/{ticketId}/likes
    * Header: X-User-Id
+   * Response: { likedUserIds: string[] }
    */
   async getLikedUsers(
     ticketId: string | number,
     userId: string
   ): Promise<Result<{ likedUserIds: string[] }>> {
+    // ticketId를 숫자로 변환 (백엔드는 integer를 기대함)
     const numericTicketId = typeof ticketId === 'string' ? parseInt(ticketId, 10) : ticketId;
+    
     if (isNaN(numericTicketId)) {
       return {
         success: false,
@@ -283,6 +243,7 @@ class TicketService {
         },
       };
     }
+    
     return apiClient.get<{ likedUserIds: string[] }>(
       `/api/tickets/${numericTicketId}/likes`,
       {
@@ -291,6 +252,56 @@ class TicketService {
     );
   }
 
+  /**
+   * 10) 티켓 고급 검색
+   * POST /api/tickets/user/{userId}/search
+   * Request Body: TicketSearchRequest
+   * Response: TicketResponse[]
+   */
+  async searchTickets(
+    userId: string,
+    searchParams: {
+      startDate?: string; // "YYYY-MM-DD" 형식
+      endDate?: string; // "YYYY-MM-DD" 형식
+      genre?: string; // "BAND", "MUSICAL", "PLAY"
+      venue?: string;
+      artist?: string;
+      performanceTitle?: string;
+      sortBy?: string; // "viewDate", "createdAt"
+      sortDirection?: string; // "ASC", "DESC"
+    }
+  ): Promise<Result<any[]>> {
+    return apiClient.post<any[]>(
+      `/api/tickets/user/${userId}/search`,
+      searchParams
+    );
+  }
+
+  /**
+   * 11) 티켓 통계 분석
+   * GET /api/tickets/user/{userId}/statistics?year={year}
+   * Response: TicketStatisticsResponse
+   */
+  async getTicketStatistics(
+    userId: string,
+    year?: number
+  ): Promise<Result<any>> {
+    const yearParam = year ? `?year=${year}` : '';
+    return apiClient.get<any>(`/api/tickets/user/${userId}/statistics${yearParam}`);
+  }
+
+  /**
+   * 12) 연말 결산 (Year-in-Review)
+   * GET /api/tickets/user/{userId}/year-in-review?year={year}
+   * Response: YearInReviewResponse
+   */
+  async getYearInReview(
+    userId: string,
+    year?: number
+  ): Promise<Result<any>> {
+    const yearParam = year ? `?year=${year}` : '';
+    return apiClient.get<any>(`/api/tickets/user/${userId}/year-in-review${yearParam}`);
+  }
 }
 
 export const ticketService = new TicketService();

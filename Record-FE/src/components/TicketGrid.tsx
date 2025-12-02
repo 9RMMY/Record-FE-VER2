@@ -31,7 +31,6 @@ const TicketGrid: React.FC<TicketGridProps> = ({
   const defaultCardWidth = (width - 10) / 3; // 3 columns with padding (20px * 2 + 20px gaps)
   const cardWidth = customCardWidth || defaultCardWidth;
   const cardHeight = cardWidth * cardAspectRatio;
-  
   const renderTicketCard = ({ item }: { item: Ticket }) => {
     const hasImages = item.images && item.images.length > 0;
     

@@ -20,12 +20,6 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({ monthlyTicketCount }) =
       <View style={styles.titleSection}>
         <Text style={styles.calendarTitle}>캘린더</Text>
         <View style={styles.rightSection}>
-          <TouchableOpacity
-            style={styles.archiveButton}
-            onPress={() => navigation.navigate('PerformanceArchive' as never)}
-          >
-            <Text style={styles.archiveButtonText}>아카이브</Text>
-          </TouchableOpacity>
           <View style={styles.ticketCountBadge}>
             <Text style={styles.ticketCountText}>🎟️  {monthlyTicketCount}개</Text>
           </View>
@@ -47,33 +41,22 @@ const styles = StyleSheet.create({
   },
   calendarTitle: {
     ...Typography.title1,
-    fontWeight: '700',
+    fontWeight: '500',
     color: Colors.label,
   },
+
   rightSection: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
   },
-  archiveButton: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    justifyContent: 'center',
-    borderRadius: BorderRadius.lg,
-    borderWidth: 0.5,
-    borderColor: Colors.systemGray5,
-  },
-  archiveButtonText: {
-    ...Typography.subheadline,
-    color: Colors.label,
-    fontWeight: '600',
-  },
+
   // Ticket count
   ticketCountBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Colors.systemBackground,
-    borderRadius: BorderRadius.xl,
+    borderRadius: BorderRadius.xxl,
     borderWidth: 0.5,
     borderColor: Colors.systemGray5,
     height: 36,
@@ -82,7 +65,7 @@ const styles = StyleSheet.create({
   ticketCountText: {
     color: Colors.primary,
     ...Typography.subheadline,
-    fontWeight: 'bold',
+    fontWeight: '500',
   },
 });
 

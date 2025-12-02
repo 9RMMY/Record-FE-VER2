@@ -585,6 +585,38 @@ export const fetchTicketsByDateAtom = atom(
 );
 
 /**
+ * 친구 티켓 목록의 특정 티켓 좋아요 상태 업데이트
+ */
+export const updateFriendTicketLikeAtom = atom(
+  null,
+  (get, set, friendId: string, ticketId: string, isLiked: boolean, likeCount: number) => {
+    const currentMapState = get(friendTicketsMapStateAtom);
+    const currentMap = currentMapState.data || new Map();
+    
+    if (!currentMap.has(friendId)) {
+      return; // 친구 티켓 목록이 없으면 업데이트하지 않음
+    }
+    
+    const friendTickets = currentMap.get(friendId) || [];
+    const updatedTickets = friendTickets.map(ticket => {
+      if (ticket.id === ticketId) {
+        return {
+          ...ticket,
+          isLiked,
+          likeCount,
+        };
+      }
+      return ticket;
+    });
+    
+    const newMap = new Map(currentMap);
+    newMap.set(friendId, updatedTickets);
+    
+    set(friendTicketsMapStateAtom, apiStateHelpers.setSuccess(currentMapState, newMap));
+  }
+);
+
+/**
  * 읽기 전용 atoms (컴포넌트에서 사용)
  */
 export const myTicketsAtom = atom<Ticket[]>((get) => {
